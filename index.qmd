@@ -29,8 +29,8 @@ format:
       - simplemenu
     simplemenu:
       flat: true
-      barhtml:
-        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      # barhtml:
+      #   header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
       scale: 0.5
 webr:
   cell-options:
