@@ -1,0 +1,52 @@
+[
+  {
+    "objectID": "index.html#poisson-point-processes-csr",
+    "href": "index.html#poisson-point-processes-csr",
+    "title": "Point Process Models (WebR)",
+    "section": "Poisson Point Processes (CSR)",
+    "text": "Poisson Point Processes (CSR)\nspatstat.random::rpoispp(lambda, win)\n\n \\(N \\sim \\text{Pois}(\\lambda)\\)\n For \\(i \\in \\{1, \\ldots, N\\}\\): Generate \\(X_i, Y_i \\sim \\mathcal{U}(\\texttt{win})\\)",
+    "crumbs": [
+      "<i class='bi bi-house pe-1'></i> Home"
+    ]
+  },
+  {
+    "objectID": "index.html#simple-sequential-inhibition-ssi",
+    "href": "index.html#simple-sequential-inhibition-ssi",
+    "title": "Point Process Models (WebR)",
+    "section": "Simple Sequential Inhibition (SSI)",
+    "text": "Simple Sequential Inhibition (SSI)\nspatstat.random::rSSI(r, n=Inf, giveup=1000, win)\n\nInitialize \\(\\mathbf{S} = \\varnothing\\). While not done:\n\n Generate \\(\\mathbf{E} = (X, Y) \\sim \\mathcal{U}(\\texttt{win})\\)\n Check if \\(\\mathbf{E}\\) within r units of any existing point in \\(\\mathbf{S}\\)\n\nIf it is, throw \\(\\mathbf{E}\\) away. Otherwise, add \\(\\mathbf{E}\\) to \\(\\mathbf{S}\\)\n\n done=TRUE if \\(\\mathbf{S}\\) has n points OR has been the same for giveup steps",
+    "crumbs": [
+      "<i class='bi bi-house pe-1'></i> Home"
+    ]
+  },
+  {
+    "objectID": "index.html#matérn-cluster-process",
+    "href": "index.html#matérn-cluster-process",
+    "title": "Point Process Models (WebR)",
+    "section": "Matérn Cluster Process",
+    "text": "Matérn Cluster Process\n\n\n\nspatstat.random::rMatClust(kappa, scale, mu, win)\n\n\nDocs\n\n\n\n\n Generate \\(K(\\kappa)\\) parent points via Poisson Point Process with intensity \\(\\lambda = \\kappa\\)\n For each parent point \\(\\mathbf{s}_i \\in \\left\\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{K(\\kappa)}\\right\\}\\):\n\nGenerate \\(N(\\mu)\\) offspring points via Poisson Point Process with intensity \\(\\lambda = \\mu\\), distributed uniformly within a circle of radius scale centered at \\(\\mathbf{s}_i\\)\n\n Offspring points form the outcome (parent points are thrown away)",
+    "crumbs": [
+      "<i class='bi bi-house pe-1'></i> Home"
+    ]
+  },
+  {
+    "objectID": "index.html#matérn-inhibition-process-i-and-ii",
+    "href": "index.html#matérn-inhibition-process-i-and-ii",
+    "title": "Point Process Models (WebR)",
+    "section": "Matérn Inhibition Process (I and II)",
+    "text": "Matérn Inhibition Process (I and II)\nspatstat.random::rMaternI(kappa, r, win)\nspatstat.random::rMaternII(kappa, r, win)\n\n\n\n\n\n\n\nrMaternI() [Docs]\nrMaternII() [Docs]\n\n\n\n\n\n\n Generate events \\(\\mathbf{S} = \\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{N(\\lambda)}\\}\\) via Poisson point process with \\(\\lambda = \\kappa\\)\n\n\n Generate events \\(\\mathbf{S} = \\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{N(\\lambda)}\\}\\) via Poisson point process with \\(\\lambda = \\kappa\\), plus timestamp \\(t_i \\sim \\mathcal{U}(0,1)\\) for each \\(\\mathbf{s}_i\\)\n\n\n\n\n Delete all pairs of points \\(\\mathbf{s}_i\\), \\(\\mathbf{s}_j\\) for which \\(\\textsf{dist}(\\mathbf{s}_i, \\mathbf{s}_j) &lt; \\texttt{r}\\)\n\n\n For each pair of points \\(\\mathbf{s}_i\\), \\(\\mathbf{s}_j\\): if \\(\\textsf{dist}(\\mathbf{s}_i, \\mathbf{s}_j) &lt; \\texttt{r}\\), delete the later point",
+    "crumbs": [
+      "<i class='bi bi-house pe-1'></i> Home"
+    ]
+  },
+  {
+    "objectID": "index.html#cox-processes-random-intensity-random-events",
+    "href": "index.html#cox-processes-random-intensity-random-events",
+    "title": "Point Process Models (WebR)",
+    "section": "Cox Processes: Random Intensity → Random Events",
+    "text": "Cox Processes: Random Intensity → Random Events\n\n\nspatstat.random::rLGCP(model, mu, param, win)\nmodels=c(\"exponential\", \"gauss\", \"stable\", \"gencauchy\", \"matern\")\n\nDocs",
+    "crumbs": [
+      "<i class='bi bi-house pe-1'></i> Home"
+    ]
+  }
+]
