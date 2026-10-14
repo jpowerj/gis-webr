@@ -1,69 +1,152 @@
 [
   {
-    "objectID": "git_submodules.html",
-    "href": "git_submodules.html",
-    "title": "Git Submodules - Basic Explanation",
+    "objectID": "w08-spdep/index.html",
+    "href": "w08-spdep/index.html",
+    "title": "Unambiguous Neighborhoods with spdep",
     "section": "",
-    "text": "Git Submodules - Basic Explanation\n\nWhy submodules?\nIn Git you can add a submodule to a repository. This is basically a repository embedded in your main repository. This can be very useful. A couple of usecases of submodules:\n\nSeparate big codebases into multiple repositories.\nUseful if you have a big project that contains multiple subprojects. You can make every subproject a submodule. This way you’ll have a cleaner Git log, because the commits are specific to a certain submodule.\nRe-use the submodule in multiple parent repositories.\nUseful if you have multiple repositories that share a common component. With this approach you can easily update that shared component in all the repositories that added them as a submodule. This is a lot more convienient than copy-pasting the code into the repositories.\n\n\n\nBasics\nWhen you add a submodule in Git, you don’t add the code of the submodule to the main repository, you only add information about the submodule that is added to the main repository. This information describes which commit the submodule is pointing at. This way, the submodule’s code won’t automatically be updated if the submodule’s repository is updated. This is good, because your main repository might not work with the latest commit of the submodule; it prevents unexpected behaviour.\n\n\nAdding a submodule\nYou can add a submodule to a repository like this:\ngit submodule add git@github.com:path_to/submodule.git path-to-submodule\ngit submodule add jpowerj@github.com:dsan-globals.git dsan-globals\nWith default configuration, this will check out the code of the submodule.git repository to the path-to-submodule directory, and will add information to the main repository about this submodule, which contains the commit the submodule points to, which will be the current commit of the default branch (usually the master branch) at the time this command is executed.\nAfter this operation, if you do a git status you’ll see two files in the Changes to be committed list: the .gitmodules file and the path to the submodule. When you commit and push these files, you’ll commit/push the submodule to the origin.\n\n\nGetting the submodule’s code\nIf a new submodule is created by one person, the other people in the team need to initiate this submodule. First you have to get the information about the submodule, this is retrieved by a normal git pull. If there are new submodules you’ll see it in the output of git pull. Then you’ll have to initiate them with:\ngit submodule init\nThis will pull all the code from the submodule and place it in the directory that it’s configured to.\nIf you’ve cloned a repository that makes use of submodules, you should also run this command to get the submodule’s code. This is not automatically done by git clone. However, if you add the --recurse-submodules flag, it will.\n\n\nPushing updates in the submodule\nThe submodule is just a separate repository. If you want to make changes to it, you should make the changes in its repository and push them like in a regular Git repository: Just execute the git commands in the submodule’s directory. However, you should also let the main repository know that you’ve updated the submodule’s repository, and make it use the new commit of the repository of the submodule. Because if you make new commits inside a submodule, the main repository will still point to the old commit.\nIf there are changes in the submodule’s repository, and you do a git status in the main repository, then the submodule will be in the Changes not staged for commit list, and will have the text (modified content) behind it. This means that the code of the submodule is checked out on a different commit than the main repository is pointing to. To make the main repository point to this new commit, you should create another commit in the main repository.\nThe next sections describe different scenarios on doing this.\n\nMake changes inside a submodule\n\ncd inside the submodule directory.\nMake the desired changes.\ngit commit the new changes.\ngit push the new commit.\ncd back to the main repository.\nIn git status you’ll see that the submodule directory is modified.\nIn git diff you’ll see the old and new commit pointers.\nWhen you git commit in the main repository, it will update the pointer.\n\n\n\nUpdate the submodule pointer to a different commit\n\ncd inside the submodule directory.\ngit checkout the branch/commit you want to point to.\ncd back to the main repository.\nIn git status you’ll see that the submodule directory is modified.\nIn git diff you’ll see the old and new commit pointers.\nWhen you git commit in the main repository, it will update the pointer.\n\n\n\nIf someone else updated the submodule pointer\nIf someone updated a submodule, the other team-members should update the code of their submodules. This is not automatically done by git pull, because with git pull it only retrieves the information that the submodule is pointing to another commit, but doesn’t update the submodule’s code.\nTo see the current commits that are checked out for all your submodules:\ngit submodule status\nTo update the code of your submodules:\ngit submodule update\nIf a submodule is not initiated yet, add the --init flag. If any submodule has submodules itself, you can add the --recursive flag to recursively init and update submodules.\n\nWhat happens if you don’t run this command?\nIf you don’t run this command, the code of your submodule is checked out to an old commit. When you do git status in the main repository, you will see the submodule in the Changes not staged for commit list with the text (modified content) behind it. If you would do a git status inside the submodule, it would say HEAD detached at &lt;commit-hash&gt;. This is not because you changed the submodule’s code, but because its code is checked out to a different commit than the commit used in the main repository. So in the main repo, Git sees this as a change, but actually you just didn’t update the submodule. So if you’re working with submodules, don’t forget to keep your submodules up-to-date.\n\n\n\n\nMaking it easier for everyone\nIt is sometimes annoying if you forget to initiate and update your submodules. Fortunately, there are some tricks to make it easier:\ngit clone --recurse-submodules\nThis will clone a repository and also init / update any possible submodules the repository has.\ngit pull --recurse-submodules\nThis will pull the main repository and also it’s submodules.\nAnd you can make it easier with aliases:\ngit config --global alias.clone-all 'clone --recurse-submodules'\ngit config --global alias.pull-all 'pull --recurse-submodules'"
-  },
-  {
-    "objectID": "index.html#poisson-point-processes-csr",
-    "href": "index.html#poisson-point-processes-csr",
-    "title": "Point Process Models (WebR)",
-    "section": "Poisson Point Processes (CSR)",
-    "text": "Poisson Point Processes (CSR)\nspatstat.random::rpoispp(lambda, win)\n\n \\(N \\sim \\text{Pois}(\\lambda)\\)\n For \\(i \\in \\{1, \\ldots, N\\}\\): Generate \\(X_i, Y_i \\sim \\mathcal{U}(\\texttt{win})\\)",
+    "text": "(This code cell is set to auto-run upon page load!)\n\n\n\n\n\n\n\n\n\nRelevant Moraga\nRelevant Pebesma",
     "crumbs": [
-      "<i class='bi bi-house pe-1'></i> Home"
+      "W08: Neighborhoods"
     ]
   },
   {
-    "objectID": "index.html#simple-sequential-inhibition-ssi",
-    "href": "index.html#simple-sequential-inhibition-ssi",
-    "title": "Point Process Models (WebR)",
-    "section": "Simple Sequential Inhibition (SSI)",
-    "text": "Simple Sequential Inhibition (SSI)\nspatstat.random::rSSI(r, n=Inf, giveup=1000, win)\n\nInitialize \\(\\mathbf{S} = \\varnothing\\). While not done:\n\n Generate \\(\\mathbf{E} = (X, Y) \\sim \\mathcal{U}(\\texttt{win})\\)\n Check if \\(\\mathbf{E}\\) within r units of any existing point in \\(\\mathbf{S}\\)\n\nIf it is, throw \\(\\mathbf{E}\\) away. Otherwise, add \\(\\mathbf{E}\\) to \\(\\mathbf{S}\\)\n\n done=TRUE if \\(\\mathbf{S}\\) has n points OR has been the same for giveup steps",
+    "objectID": "w08-spdep/index.html#initialization-code",
+    "href": "w08-spdep/index.html#initialization-code",
+    "title": "Unambiguous Neighborhoods with spdep",
+    "section": "",
+    "text": "(This code cell is set to auto-run upon page load!)\n\n\n\n\n\n\n\n\n\nRelevant Moraga\nRelevant Pebesma",
     "crumbs": [
-      "<i class='bi bi-house pe-1'></i> Home"
+      "W08: Neighborhoods"
     ]
   },
   {
-    "objectID": "index.html#matérn-cluster-process",
-    "href": "index.html#matérn-cluster-process",
-    "title": "Point Process Models (WebR)",
-    "section": "Matérn Cluster Process",
-    "text": "Matérn Cluster Process\n\n\n\nspatstat.random::rMatClust(kappa, scale, mu, win)\n\n\nDocs\n\n\n\n\n Generate \\(K(\\kappa)\\) parent points via Poisson Point Process with intensity \\(\\lambda = \\kappa\\)\n For each parent point \\(\\mathbf{s}_i \\in \\left\\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{K(\\kappa)}\\right\\}\\):\n\nGenerate \\(N(\\mu)\\) offspring points via Poisson Point Process with intensity \\(\\lambda = \\mu\\), distributed uniformly within a circle of radius scale centered at \\(\\mathbf{s}_i\\)\n\n Offspring points form the outcome (parent points are thrown away)",
+    "objectID": "w08-spdep/index.html#finding-neighbors-in-asia",
+    "href": "w08-spdep/index.html#finding-neighbors-in-asia",
+    "title": "Unambiguous Neighborhoods with spdep",
+    "section": "(1) Finding Neighbors in Asia",
+    "text": "(1) Finding Neighbors in Asia\n\n(1.1) Download Countries as POLYGONs from rnaturalearth\nHere we use rnaturalearth::ne_countres(), with the continent option. We specify scale=50 since otherwise smaller countries like Bahrain get excluded!\n\n\n\n\n\n\n\n\n\n\n(1.2) Detecting Neighbors with spdep::poly2nb()\nGiven an sf object, spdep::poly2nb() identifies all pairs of touching POLYGONs.",
     "crumbs": [
-      "<i class='bi bi-house pe-1'></i> Home"
+      "W08: Neighborhoods"
     ]
   },
   {
-    "objectID": "index.html#matérn-inhibition-process-i-and-ii",
-    "href": "index.html#matérn-inhibition-process-i-and-ii",
-    "title": "Point Process Models (WebR)",
-    "section": "Matérn Inhibition Process (I and II)",
-    "text": "Matérn Inhibition Process (I and II)\nspatstat.random::rMaternI(kappa, r, win)\nspatstat.random::rMaternII(kappa, r, win)\n\n\n\n\n\n\n\nrMaternI() [Docs]\nrMaternII() [Docs]\n\n\n\n\n\n\n Generate events \\(\\mathbf{S} = \\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{N(\\lambda)}\\}\\) via Poisson point process with \\(\\lambda = \\kappa\\)\n\n\n Generate events \\(\\mathbf{S} = \\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{N(\\lambda)}\\}\\) via Poisson point process with \\(\\lambda = \\kappa\\), plus timestamp \\(t_i \\sim \\mathcal{U}(0,1)\\) for each \\(\\mathbf{s}_i\\)\n\n\n\n\n Delete all pairs of points \\(\\mathbf{s}_i\\), \\(\\mathbf{s}_j\\) for which \\(\\textsf{dist}(\\mathbf{s}_i, \\mathbf{s}_j) &lt; \\texttt{r}\\)\n\n\n For each pair of points \\(\\mathbf{s}_i\\), \\(\\mathbf{s}_j\\): if \\(\\textsf{dist}(\\mathbf{s}_i, \\mathbf{s}_j) &lt; \\texttt{r}\\), delete the later point",
+    "objectID": "w08-spdep/index.html#zooming-in-afghanistan-and-its-neighborhood",
+    "href": "w08-spdep/index.html#zooming-in-afghanistan-and-its-neighborhood",
+    "title": "Unambiguous Neighborhoods with spdep",
+    "section": "(2) Zooming In: Afghanistan and its Neighborhood",
+    "text": "(2) Zooming In: Afghanistan and its Neighborhood",
     "crumbs": [
-      "<i class='bi bi-house pe-1'></i> Home"
+      "W08: Neighborhoods"
     ]
   },
   {
-    "objectID": "index.html#cox-processes-random-intensity-random-events",
-    "href": "index.html#cox-processes-random-intensity-random-events",
-    "title": "Point Process Models (WebR)",
-    "section": "Cox Processes: Random Intensity → Random Events",
-    "text": "Cox Processes: Random Intensity → Random Events\n\n\nspatstat.random::rLGCP(model, mu, param, win)\nmodels=c(\"exponential\", \"gauss\", \"stable\", \"gencauchy\", \"matern\")\n\nDocs",
+    "objectID": "w08-spdep/index.html#computing-neighborliness-weights",
+    "href": "w08-spdep/index.html#computing-neighborliness-weights",
+    "title": "Unambiguous Neighborhoods with spdep",
+    "section": "(3) Computing Neighborliness Weights",
+    "text": "(3) Computing Neighborliness Weights",
     "crumbs": [
-      "<i class='bi bi-house pe-1'></i> Home"
+      "W08: Neighborhoods"
     ]
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Interactive (WebR-Based) GIS Slides",
+    "title": "Interactive (WebR-Based) GIS Notebooks",
     "section": "",
-    "text": "Title\nDate\n\n\n\n\n\nNo matching items",
+    "text": "Title\n\n\n\nDate\n\n\n\n\n\n\n\n\nRandom Fields (WebR Version)\n\n\nOct 7\n\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "<i class='bi bi-house pe-1'></i> Home"
+    ]
+  },
+  {
+    "objectID": "w08-ppm/index.html#poisson-point-processes-csr",
+    "href": "w08-ppm/index.html#poisson-point-processes-csr",
+    "title": "Point Process Models (WebR Version)",
+    "section": "Poisson Point Processes (CSR)",
+    "text": "Poisson Point Processes (CSR)\nspatstat.random::rpoispp(lambda, win)\n\n \\(N \\sim \\text{Pois}(\\lambda)\\)\n For \\(i \\in \\{1, \\ldots, N\\}\\): Generate \\(X_i, Y_i \\sim \\mathcal{U}(\\texttt{win})\\)",
+    "crumbs": [
+      "W08: Point Processes"
+    ]
+  },
+  {
+    "objectID": "w08-ppm/index.html#simple-sequential-inhibition-ssi",
+    "href": "w08-ppm/index.html#simple-sequential-inhibition-ssi",
+    "title": "Point Process Models (WebR Version)",
+    "section": "Simple Sequential Inhibition (SSI)",
+    "text": "Simple Sequential Inhibition (SSI)\nspatstat.random::rSSI(r, n=Inf, giveup=1000, win)\n\nInitialize \\(\\mathbf{S} = \\varnothing\\). While not done:\n\n Generate \\(\\mathbf{E} = (X, Y) \\sim \\mathcal{U}(\\texttt{win})\\)\n Check if \\(\\mathbf{E}\\) within r units of any existing point in \\(\\mathbf{S}\\)\n\nIf it is, throw \\(\\mathbf{E}\\) away. Otherwise, add \\(\\mathbf{E}\\) to \\(\\mathbf{S}\\)\n\n done=TRUE if \\(\\mathbf{S}\\) has n points OR has been the same for giveup steps",
+    "crumbs": [
+      "W08: Point Processes"
+    ]
+  },
+  {
+    "objectID": "w08-ppm/index.html#matérn-cluster-process",
+    "href": "w08-ppm/index.html#matérn-cluster-process",
+    "title": "Point Process Models (WebR Version)",
+    "section": "Matérn Cluster Process",
+    "text": "Matérn Cluster Process\n\n\n\nspatstat.random::rMatClust(kappa, scale, mu, win)\n\n\nDocs\n\n\n\n\n Generate \\(K(\\kappa)\\) parent points via Poisson Point Process with intensity \\(\\lambda = \\kappa\\)\n For each parent point \\(\\mathbf{s}_i \\in \\left\\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{K(\\kappa)}\\right\\}\\):\n\nGenerate \\(N(\\mu)\\) offspring points via Poisson Point Process with intensity \\(\\lambda = \\mu\\), distributed uniformly within a circle of radius scale centered at \\(\\mathbf{s}_i\\)\n\n Offspring points form the outcome (parent points are thrown away)",
+    "crumbs": [
+      "W08: Point Processes"
+    ]
+  },
+  {
+    "objectID": "w08-ppm/index.html#matérn-inhibition-process-i-and-ii",
+    "href": "w08-ppm/index.html#matérn-inhibition-process-i-and-ii",
+    "title": "Point Process Models (WebR Version)",
+    "section": "Matérn Inhibition Process (I and II)",
+    "text": "Matérn Inhibition Process (I and II)\nspatstat.random::rMaternI(kappa, r, win)\nspatstat.random::rMaternII(kappa, r, win)\n\n\n\n\n\n\n\nrMaternI() [Docs]\nrMaternII() [Docs]\n\n\n\n\n\n\n Generate events \\(\\mathbf{S} = \\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{N(\\lambda)}\\}\\) via Poisson point process with \\(\\lambda = \\kappa\\)\n\n\n Generate events \\(\\mathbf{S} = \\{\\mathbf{s}_1, \\ldots, \\mathbf{s}_{N(\\lambda)}\\}\\) via Poisson point process with \\(\\lambda = \\kappa\\), plus timestamp \\(t_i \\sim \\mathcal{U}(0,1)\\) for each \\(\\mathbf{s}_i\\)\n\n\n\n\n Delete all pairs of points \\(\\mathbf{s}_i\\), \\(\\mathbf{s}_j\\) for which \\(\\textsf{dist}(\\mathbf{s}_i, \\mathbf{s}_j) &lt; \\texttt{r}\\)\n\n\n For each pair of points \\(\\mathbf{s}_i\\), \\(\\mathbf{s}_j\\): if \\(\\textsf{dist}(\\mathbf{s}_i, \\mathbf{s}_j) &lt; \\texttt{r}\\), delete the later point",
+    "crumbs": [
+      "W08: Point Processes"
+    ]
+  },
+  {
+    "objectID": "w08-ppm/index.html#cox-processes-random-intensity-random-events",
+    "href": "w08-ppm/index.html#cox-processes-random-intensity-random-events",
+    "title": "Point Process Models (WebR Version)",
+    "section": "Cox Processes: Random Intensity → Random Events",
+    "text": "Cox Processes: Random Intensity → Random Events\n\n\nspatstat.random::rLGCP(model, mu, param, win)\nmodels=c(\"exponential\", \"gauss\", \"stable\", \"gencauchy\", \"matern\")\n\nDocs",
+    "crumbs": [
+      "W08: Point Processes"
+    ]
+  },
+  {
+    "objectID": "w07/slides.html#geostatistical-data-dumping-sand-onto-a-table",
+    "href": "w07/slides.html#geostatistical-data-dumping-sand-onto-a-table",
+    "title": "Random Fields (WebR Version)",
+    "section": "Geostatistical Data: Dumping Sand onto a Table!",
+    "text": "Geostatistical Data: Dumping Sand onto a Table!\n\nDomain \\(D\\): tabletop; Random process: dumping sand onto the tabletop\n\\(\\Omega\\): All possible realizations of process. \\(\\omega_i \\in \\Omega\\) Particular realization\n\n\n\n\n\n\n\nFigure 1: \\(\\omega_1 \\in \\Omega\\)\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: \\(\\omega_2 \\in \\Omega\\)\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: \\(\\omega_3 \\in \\Omega\\)\n\n\n\n\n\n\n\n\n\n\n\nFigure 4: \\(\\omega_4 \\in \\Omega\\)",
+    "crumbs": [
+      "W07: Random Fields"
+    ]
+  },
+  {
+    "objectID": "w07/slides.html#example-water-coverage-in-bhola-bangladesh",
+    "href": "w07/slides.html#example-water-coverage-in-bhola-bangladesh",
+    "title": "Random Fields (WebR Version)",
+    "section": "Example: Water Coverage in Bhola, Bangladesh",
+    "text": "Example: Water Coverage in Bhola, Bangladesh\n\n\n\n\n\n\nArcGIS: Sea Level Rise in Bangladesh (See also)\n\n\n\n\n\n\n\n@parenti_tropic_2011",
+    "crumbs": [
+      "W07: Random Fields"
+    ]
+  },
+  {
+    "objectID": "w07/slides.html#geostatistical-modeling-terrains-are-not-spiky-chaotic-landscapes",
+    "href": "w07/slides.html#geostatistical-modeling-terrains-are-not-spiky-chaotic-landscapes",
+    "title": "Random Fields (WebR Version)",
+    "section": "Geostatistical Modeling: Terrains Are Not Spiky Chaotic Landscapes!",
+    "text": "Geostatistical Modeling: Terrains Are Not Spiky Chaotic Landscapes!\n(If they were… we’d have to worry about suddenly plunging 1000km with each step!)",
+    "crumbs": [
+      "W07: Random Fields"
+    ]
+  },
+  {
+    "objectID": "w07/slides.html#geostatistical-data-rightarrow-point-pattern",
+    "href": "w07/slides.html#geostatistical-data-rightarrow-point-pattern",
+    "title": "Random Fields (WebR Version)",
+    "section": "Geostatistical Data \\(\\rightarrow\\) Point Pattern",
+    "text": "Geostatistical Data \\(\\rightarrow\\) Point Pattern\n(Example “event”: Discovery of a point higher than Washington Monument)\n\n\n\nIndicator function: \\(\\mathbb{1}\\left[Z(\\mathbf{s}) &gt; 860\\text{m}\\right]\\)",
+    "crumbs": [
+      "W07: Random Fields"
     ]
   }
 ]

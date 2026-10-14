@@ -1,0 +1,74 @@
+:::
+::: {.column width="50%"}
+
+```{webr, dev.args = list(bg = 'transparent')}
+#| label: after-indicator
+#| fig-height: 4.75
+terra::ifel(elev_r1 > 860, elev_r1, NA) |> plot()
+```
+
+:::
+::::
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{webr, dev.args = list(bg = 'transparent')}
+#| label: before-indicator-r2
+#| fig-align: center
+#| code-fold: true
+#| fig-height: 4.25
+elev_r2 <- gen_random_table(rand_seed=6815)
+hs_r2 <- compute_hillshade(elev_r2)
+plot_hillshade(elev_r2, hs_r2)
+```
+
+:::
+::: {.column width="50%"}
+
+```{webr, dev.args = list(bg = 'transparent')}
+#| label: after-indicator-r2
+#| code-fold: true
+#| fig-height: 4.7
+my_quant <- function(x) quantile(x, 0.99)
+elev_99 <- terra::global(elev_r2, my_quant)[1,1]
+elev_indic_r2 <- terra::ifel(
+  elev_r2 > elev_99, elev_r2, NA
+)
+plot(elev_indic_r2)
+```
+
+:::
+::::
+
+## Geospatial Data $\rightarrow$ Lattice/Region Data {.crunch-title .crunch-quarto-layout-cell .title-08}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r, dev.args = list(bg = 'transparent')}
+#| label: table-to-lattice
+#| code-fold: true
+#| fig-align: center
+#| fig-cap: "(Pretend this is infinite-resolution) Infinite number of neighbors around each point!"
+table_elev <- gen_random_table(rand_seed=6805)
+table_hs <- compute_hillshade(table_elev)
+#plot_hillshade(table_elev, table_hs)
+#par(mfrow=c(1,2), mar=c(0,0,1,1))
+plot(table_elev)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r, dev.args = list(bg = 'transparent')}
+#| label: coarsened
+#| fig-align: center
+#| code-fold: true
+#| fig-cap: "Finite number of neighbors around each observation $\\implies$ Can study correlations between *neighboring* cells!"
+elev_coarse <- terra::aggregate(table_elev, 12)
+plot(elev_coarse)
+```
+
+:::
+::::

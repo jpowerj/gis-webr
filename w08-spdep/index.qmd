@@ -1,0 +1,183 @@
+---
+title: "Unambiguous Neighborhoods with `spdep`"
+author: "Jeff Jacobs"
+date: 2026-10-14
+sidebar: mainnav
+categories:
+  - Extra Writeups
+unit: "Unit 3: Spatial Data Science Foundations"
+assignments:
+  - HW3
+format:
+  live-html:
+    df-print: paged
+    link-external-icon: true
+    link-external-newwindow: true
+    toc: true
+    webr:
+      render-df: reactable
+      packages:
+        - mapview
+        - rnaturalearth
+        - rnaturalearthdata
+        - sf
+        - ggplot2
+        - dplyr
+        - reactable
+---
+
+{{< include ../_extensions/r-wasm/live/_knitr.qmd >}}
+
+## (0) Initialization Code
+
+*(This code cell is set to auto-run upon page load!)*
+
+```{webr}
+#| label: init-sfdep
+#| autorun: true
+# library(tidyverse) loads *all* tidyverse libraries. For
+# efficiency, here we just load the two we need (dplyr for
+# the filter() function, and then ggplot2 for plotting)
+library(dplyr) |> suppressPackageStartupMessages()
+library(ggplot2) |> suppressPackageStartupMessages()
+# For outputting interactive maps of sf objects
+library(mapview) |> suppressPackageStartupMessages()
+# Fix "API Key Required" message in mapview default basemap
+mapviewOptions(basemaps = c("Esri.WorldGrayCanvas","Stadia.AlidadeSmoothDark","OpenStreetMap", "Esri.WorldImagery", "OpenTopoMap"))
+# For downloading 
+library(rnaturalearth) |> suppressPackageStartupMessages()
+library(rnaturalearthdata) |> suppressPackageStartupMessages()
+library(spdep) |> suppressPackageStartupMessages()
+# For customization of tables
+library(reactable) |> suppressPackageStartupMessages()
+render <- function(df_obj) {
+  return(reactable::reactable(
+    df_obj,
+    striped = TRUE,
+    compact = TRUE,
+    columns = list(
+      nb_weight = reactable::colDef(
+        format = reactable::colFormat(digits = 3)
+      )
+    )
+  ))
+}
+```
+
+* [Relevant Moraga](https://www.paulamoraga.com/book-spatial/spatial-neighborhood-matrices.html)
+* [Relevant Pebesma](https://r-spatial.org/book/14-Areal.html#contiguous-neighbours)
+
+## (1) Finding Neighbors in Asia
+
+### (1.1) Download Countries as `POLYGON`s from `rnaturalearth`
+
+Here we use `rnaturalearth::ne_countres()`, with the `continent` option. We specify `scale=50` since otherwise smaller countries like Bahrain get excluded!
+
+```{webr}
+#| label: get-asia-polys
+asia_countries_sf <- rnaturalearth::ne_countries(
+  continent = "Asia", scale=50
+)
+mapview(asia_countries_sf, label="geounit")
+```
+
+### (1.2) Detecting Neighbors with `spdep::poly2nb()`
+
+Given an `sf` object, `spdep::poly2nb()` identifies **all pairs** of touching `POLYGON`s.
+
+
+
+```{webr}
+#| label: compute-neighbors
+library(spdep)
+asia_countries_nb <- asia_countries_sf |>
+  spdep::poly2nb(
+    queen = TRUE,
+    row.names=asia_countries_sf$geounit
+  )
+asia_countries_nb
+```
+
+```{webr}
+#| label: plot-centroids
+nb_cents <- sf::st_point_on_surface(asia_countries_sf) |>
+  sf::st_as_sf()
+mapview(nb_cents, label="geounit")
+```
+
+```{webr}
+#| label: plot-neighbors
+nb_lines <- spdep::nb2lines(
+  asia_countries_nb,
+  coords=st_coordinates(nb_cents),
+  as_sf=TRUE
+)
+nb_lines$edgelabel <- paste0(nb_lines$i_ID, "-", nb_lines$j_ID)
+mapview(nb_cents, label="geounit") + mapview(nb_lines, label="edgelabel")
+```
+
+```{webr}
+#| label: print-nb-object
+print(asia_countries_nb)
+```
+
+## (2) Zooming In: Afghanistan and its Neighborhood
+
+```{webr}
+#| label: ggplot-afg-neighbors
+library(ggplot2)
+asia_nb_names <- attributes(asia_countries_nb)$region.id
+afg_index <- which(asia_nb_names == "Afghanistan")
+asia_countries_sf$neighbors <- "other"
+asia_countries_sf$neighbors[afg_index] <- "area"
+asia_countries_sf$neighbors[asia_countries_nb[[afg_index]]] <- "neighbors"
+afg_sf <- asia_countries_sf |>
+  dplyr::filter(neighbors != "other")
+ggplot(afg_sf) +
+  geom_sf(aes(fill = neighbors)) +
+  theme_bw() +
+  scale_fill_manual(
+    values = c("gray30", "gray", "white")
+  )
+```
+
+```{webr}
+#| label: mapview-afg-neighbors
+mapview(afg_sf, zcol="neighbors", label="geounit")
+```
+
+```{webr}
+#| label: nb-weights
+nb_weights <- asia_countries_nb |>
+  spdep::nb2listw(zero.policy=TRUE)
+nb_weights
+```
+
+```{webr}
+#| label: afg-tibble
+afg_df <- tibble(
+  nb_name=asia_countries_sf$geounit[nb_weights$neighbours[[afg_index]]],
+  nb_index=nb_weights$neighbours[[afg_index]],
+  nb_weight=nb_weights$weights[[afg_index]]
+)
+render(afg_df)
+```
+
+## (3) Computing Neighborliness *Weights*
+
+```{webr}
+#| label: distance-weights
+nb_dist_weights <- asia_countries_nb |>
+  spdep::nb2listwdist(nb_cents, zero.policy=TRUE)
+nb_dist_weights
+```
+
+```{webr}
+#| label: afg-distance-weights
+afg_dist_df <- tibble(
+  nb_name=asia_countries_sf$geounit[nb_dist_weights$neighbours[[afg_index]]],
+  nb_index=nb_dist_weights$neighbours[[afg_index]],
+  nb_weight=nb_dist_weights$weights[[afg_index]]
+)
+render(afg_dist_df)
+```

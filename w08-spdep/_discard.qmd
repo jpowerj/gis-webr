@@ -1,0 +1,22 @@
+# For customization of tables
+library(reactable) |> suppressPackageStartupMessages()
+render <- function(df_obj) {
+  return(
+    reactable::reactable(
+      df_obj,
+      searchable = TRUE,
+      striped = TRUE,
+      compact = TRUE,
+      defaultPageSize = 8,
+      theme = reactable::reactableTheme(
+        style = list(fontSize = "14px")
+      ),
+      columns = list(
+        nb_weight = reactable::colDef(
+          # name = "MPG",
+          format = reactable::colFormat(digits = 3)
+        )
+      )
+    )
+  )
+}
